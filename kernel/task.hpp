@@ -18,6 +18,7 @@
 #include "message.hpp"
 #include "paging.hpp"
 #include "fat.hpp"
+#include "debug_print.hpp"
 
 struct TaskContext {
   uint64_t cr3, rip, rflags, reserved1; // offset 0x00

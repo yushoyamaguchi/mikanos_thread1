@@ -38,8 +38,9 @@
 #include "fat.hpp"
 #include "syscall.hpp"
 #include "uefi.hpp"
+#include "debug_print.hpp"
 
-__attribute__((format(printf, 1, 2))) int printk(const char* format, ...) {
+/*__attribute__((format(printf, 1, 2))) int printk(const char* format, ...) {
   va_list ap;
   int result;
   char s[1024];
@@ -50,7 +51,7 @@ __attribute__((format(printf, 1, 2))) int printk(const char* format, ...) {
 
   console->PutString(s);
   return result;
-}
+}*/
 
 std::shared_ptr<ToplevelWindow> main_window;
 unsigned int main_window_layer_id;

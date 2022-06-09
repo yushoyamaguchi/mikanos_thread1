@@ -125,6 +125,7 @@ TaskManager::TaskManager() {
 
 Task& TaskManager::NewTask() {
   ++latest_id_;
+  printk("num of task=%lu\n",tasks_.size()+1);
   return *tasks_.emplace_back(new Task{latest_id_});
 }
 
