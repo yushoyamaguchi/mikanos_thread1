@@ -15,6 +15,7 @@
 #include "timer.hpp"
 #include "keyboard.hpp"
 #include "app_event.hpp"
+#include "thread.hpp"
 
 namespace syscall {
   struct Result {
@@ -395,13 +396,18 @@ SYSCALL(MapFile) {
   return { vaddr_begin, 0 };
 }
 
+SYSCALL(TreadCreate) {
+  thread_create((TaskFunc *)arg1);
+  return {0, 0};
+}
+
 #undef SYSCALL
 
 } // namespace syscall
 
 using SyscallFuncType = syscall::Result (uint64_t, uint64_t, uint64_t,
                                          uint64_t, uint64_t, uint64_t);
-extern "C" std::array<SyscallFuncType*, 0x10> syscall_table{
+extern "C" std::array<SyscallFuncType*, 0x11> syscall_table{
   /* 0x00 */ syscall::LogString,
   /* 0x01 */ syscall::PutString,
   /* 0x02 */ syscall::Exit,
@@ -418,6 +424,7 @@ extern "C" std::array<SyscallFuncType*, 0x10> syscall_table{
   /* 0x0d */ syscall::ReadFile,
   /* 0x0e */ syscall::DemandPages,
   /* 0x0f */ syscall::MapFile,
+  /* 0x10 */ syscall::TreadCreate,
 };
 
 void InitializeSyscall() {
