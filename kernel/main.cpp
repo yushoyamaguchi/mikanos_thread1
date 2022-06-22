@@ -281,6 +281,10 @@ extern "C" void KernelMainNewStack(
         task_manager->NewTask()
           .InitContext(TaskTerminal, 0)
           .Wakeup();
+      } else if (msg->arg.keyboard.press &&
+                 msg->arg.keyboard.keycode ==60 /* F3 */) {
+        const auto current_cr3=GetCR3();
+        printk("cr3=%lx\n",current_cr3);
       } else {
         __asm__("cli");
         auto task_it = layer_task_map->find(act);

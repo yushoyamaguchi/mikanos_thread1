@@ -7,5 +7,7 @@
 
 
 void thread_create(TaskFunc* f){
-    
+    task_manager->NewTask()
+          .InitContext(f, 77)
+          .Wakeup();
 }
