@@ -44,7 +44,7 @@ struct SyscallResult SyscallOpenFile(const char* path, int flags);
 struct SyscallResult SyscallReadFile(int fd, void* buf, size_t count);
 struct SyscallResult SyscallDemandPages(size_t num_pages, int flags);
 struct SyscallResult SyscallMapFile(int fd, size_t* file_size, int flags);
-struct SyscallResult SyscallThreadCreate(void *f);
+struct SyscallResult SyscallThreadCreate(void *f,uint64_t data);
 struct SyscallResult SyscallCR3toApp();
 
 #ifdef __cplusplus

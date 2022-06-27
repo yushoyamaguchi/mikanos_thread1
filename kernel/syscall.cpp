@@ -397,7 +397,7 @@ SYSCALL(MapFile) {
 }
 
 SYSCALL(TreadCreate) {
-  thread_create((TaskFunc *)arg1);
+  thread_create((ThreadFunc *)arg1,(int64_t)arg2);
   return {0, 0};
 }
 
