@@ -17,8 +17,8 @@ extern "C" void main(){
     void (*f)(u_int64_t,int64_t);
     f=&test_func;
     printf("uthread1\n");
-    //auto [ret, err] =SyscallThreadCreate((void *)f,77);
-    auto [ret2, err2]=SyscallCR3toApp();
-    printf("cr3=%lx\n",ret2);
+    auto [ret, err] =SyscallThreadCreate((void *)f,77);
+    //auto [ret2, err2]=SyscallCR3toApp();
+    //printf("cr3=%lx\n",ret2);
     return;
 } 

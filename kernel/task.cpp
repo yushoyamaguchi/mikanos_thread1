@@ -166,6 +166,17 @@ Error TaskManager::Sleep(uint64_t id) {
   return MAKE_ERROR(Error::kSuccess);
 }
 
+Task* TaskManager::GetTaskFromID(uint64_t id){
+  auto it = std::find_if(tasks_.begin(), tasks_.end(),
+                         [id](const auto& t){ return t->ID() == id; });
+  if (it == tasks_.end()) {
+    return NULL;
+  }
+  else{
+    return (it->get());
+  }
+}
+
 void TaskManager::Wakeup(Task* task, int level) {
   if (task->Running()) {
     ChangeLevelRunning(task, level);

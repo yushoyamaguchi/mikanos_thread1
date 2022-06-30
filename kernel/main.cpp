@@ -39,6 +39,7 @@
 #include "syscall.hpp"
 #include "uefi.hpp"
 #include "debug_print.hpp"
+#include "thread.hpp"
 
 /*__attribute__((format(printf, 1, 2))) int printk(const char* format, ...) {
   va_list ap;
@@ -285,6 +286,10 @@ extern "C" void KernelMainNewStack(
                  msg->arg.keyboard.keycode ==60 /* F3 */) {
         const auto current_cr3=GetCR3();
         printk("cr3=%lx\n",current_cr3);
+      } else if (msg->arg.keyboard.press &&
+                 msg->arg.keyboard.keycode ==61 /* F4 */) {
+        thread_create(dummy_thread_func,88);
+        //printk("cr3=%lx\n",current_cr3);
       } else {
         __asm__("cli");
         auto task_it = layer_task_map->find(act);

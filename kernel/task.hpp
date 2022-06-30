@@ -104,6 +104,7 @@ class TaskManager {
   Task& CurrentTask();
   void Finish(int exit_code);
   WithError<int> WaitFinish(uint64_t task_id);
+  Task* GetTaskFromID(uint64_t id);
 
  private:
   std::vector<std::unique_ptr<Task>> tasks_{};
