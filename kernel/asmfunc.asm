@@ -205,6 +205,26 @@ CallApp:  ; int CallApp(int argc, char** argv, uint16_t ss,
     o64 retf
     ; アプリケーションが終了してもここには来ない
 
+
+global CallAppforThread
+CallAppforThread:  ; int CallAppforThread(int64_t data, uint16_t ss,
+          ;             uint64_t rip, uint64_t rsp, uint64_t* os_stack_ptr);
+    push rbx
+    push rbp
+    push r12
+    push r13
+    push r14
+    push r15
+    mov [r8], rsp ; OS 用のスタックポインタを保存
+
+    push rsi  ; SS
+    push rcx   ; RSP
+    add rsi, 8
+    push rsi  ; CS
+    push rdx  ; RIP
+    o64 retf
+    ; アプリケーションが終了してもここには来ない
+
 extern LAPICTimerOnInterrupt
 ; void LAPICTimerOnInterrupt(const TaskContext& ctx_stack);
 

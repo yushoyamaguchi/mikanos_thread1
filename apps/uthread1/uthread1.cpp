@@ -11,6 +11,9 @@
 
 void test_func(u_int64_t arg1,int64_t arg2){
     printf("data=%ld",arg2);
+    while(1){
+        
+    }
 }
 
 extern "C" void main(){
@@ -20,5 +23,5 @@ extern "C" void main(){
     auto [ret, err] =SyscallThreadCreate((void *)f,77);
     //auto [ret2, err2]=SyscallCR3toApp();
     //printf("cr3=%lx\n",ret2);
-    return;
+    exit(0);
 } 

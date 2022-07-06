@@ -7,21 +7,46 @@
 
 
 void exec_thread_func(ThreadFunc* f,uint64_t task_id,int64_t data){
-    //ここでターミナル紐づけ関係とか権限関係とかやったあとにfunc呼び出す
-    /*ToDo
-    親taskのfile関係とデマンドページング関係の変数をコピーしてくる
-    呼び出し元terminalのlayer_id取得してlayer_task_mapに追加
-    callAppでアプリケーション側の関数fを呼び出し
+    /*ここでファイル関係の設定(ターミナルとの紐づけ)
+    アプリのスタックを構築
+    callAppでfunc呼び出す
+    関数終わったらtaskも終わる設定
     親が終わったら子も終わる設定
     */
-   printk("exec_thread_func: data=%ld\n",data);
-   task_manager->Sleep(task_id);
-   return;
+    /*//こっちだったらエラーは起こらない
+    printk("exec_thread_func: data=%ld\n",data);
+    task_manager->Sleep(task_id);*/
+    printk("thread exec func : begin\n");
+    Task* child=task_manager->GetTaskFromID(task_id);
+    Task* parent=task_manager->GetTaskFromID(child->parent_id);
+    LinearAddress4Level args_frame_addr{0xffff'ffff'ffff'f000};//ページマップは設定済み
+    const int stack_size = 16 * 4096;
+    LinearAddress4Level stack_frame_addr{0xffff'ffff'ffff'f000 - (stack_size)*3};
+    printk("thread exec func : before setup page map\n");
+    // #@@range_end(increase_appstack)
+    if (auto err = SetupPageMaps(stack_frame_addr, stack_size / 4096)) {
+        task_manager->Sleep(task_id);
+        printk("thread exec func : stack page map err\n");
+        return ;
+    }
+    task_manager->Sleep(task_id);
+    /*for (int i = 0; i < parent->files_.size(); ++i) {
+        child->Files().push_back(parent->files_[i]);
+    }
+    child->SetDPagingBegin(parent->DPagingBegin());
+    child->SetDPagingEnd(parent->DPagingEnd());
+    printk("thread exec func : before call app\n");
+    /*int ret = CallAppforThread(data, 3 << 3 | 3, reinterpret_cast<uint64_t>(f),
+                    stack_frame_addr.value + stack_size - 8,
+                    &(child->OSStackPointer()));*/
+
+    return;
 }
 
 
 void dummy_thread_func(int64_t i){
     printk("dummy thread func\n");
+    __asm__("cli");
     Task& task = task_manager->CurrentTask();
     __asm__("sti");
     task.Sleep();
@@ -57,7 +82,7 @@ void thread_create(ThreadFunc* f,int64_t data){
     new_task->context_.rdx = data;
 
     task_manager->Wakeup(new_task);
-    
+
 }
 
 
