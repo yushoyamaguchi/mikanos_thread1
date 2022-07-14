@@ -638,6 +638,10 @@ WithError<int> Terminal::ExecuteFile(fat::DirectoryEntry& file_entry,
     task.Files().push_back(files_[i]);
   }
 
+  for (int i = 0; i < files_.size(); ++i) {
+    printk("pointer of task.files[%d]=%p\n",i,task.files_[i].get());
+  }
+
   const uint64_t elf_next_page =
     (app_load.vaddr_end + 4095) & 0xffff'ffff'ffff'f000;
   task.SetDPagingBegin(elf_next_page);
