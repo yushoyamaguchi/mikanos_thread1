@@ -9,9 +9,10 @@
 
 #define BIG_IN_APP 500
 
-void test_func(u_int64_t arg1,int64_t arg2){
+void test_func(int64_t arg1){
     SyscallLogString(kWarn,"from user thread\n");
-    printf("data=%ld",arg2);
+    printf("test_from_thread:data=%ld\n",arg1);
+
     long int count=0;
     while(1){
         /*count++;
@@ -22,8 +23,9 @@ void test_func(u_int64_t arg1,int64_t arg2){
 }
 
 extern "C" void main(){
-    void (*f)(u_int64_t,int64_t);
+    void (*f)(int64_t);
     f=&test_func;
+    int64_t data =5;
     printf("uthread1\n");
     SyscallLogString(kWarn,"from app\n");
     auto [ret, err] =SyscallThreadCreate((void *)f,77);

@@ -56,6 +56,7 @@ SYSCALL(PutString) {
   if (fd < 0 || task.Files().size() <= fd || !task.Files()[fd]) {
     return { 0, EBADF };
   }
+  printk("task_id=%ld,fd=%ld\n",task.ID(),fd);
   return { task.Files()[fd]->Write(s, len), 0 };
 }
 

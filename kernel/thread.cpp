@@ -5,6 +5,8 @@
 #include "segment.hpp"
 #include "timer.hpp"
 
+int num_of_thread=0;
+
 
 void exec_thread_func(ThreadFunc* f,uint64_t task_id,int64_t data){
     /*ここでファイル関係の設定(ターミナルとの紐づけ)
@@ -16,27 +18,23 @@ void exec_thread_func(ThreadFunc* f,uint64_t task_id,int64_t data){
     //こっちだったらエラーは起こらない
     /*printk("exec_thread_func: data=%ld\n",data);
     task_manager->Sleep(task_id);*/
-    printk("thread exec func : begin\n");
     Task* child=task_manager->GetTaskFromID(task_id);
     Task* parent=task_manager->GetTaskFromID(child->parent_id);
     const int stack_size = 16 * 4096;
-    LinearAddress4Level stack_frame_addr{0xffff'ffff'ffff'f000 - (stack_size)*4};
-    printk("thread exec func : before setup page map\n");
+    num_of_thread++;
+    LinearAddress4Level stack_frame_addr{0xffff'ffff'ffff'f000 - (stack_size)*(num_of_thread+1)};
     // #@@range_end(increase_appstack)
     if (auto err = SetupPageMaps(stack_frame_addr, stack_size / 4096)) {
         printk("thread exec func : stack page map err\n");
         while(1) __asm__("hlt");
         return ;
     }
-    printk("arter SetupPage\n");
     /*while(1)__asm__("hlt");
     task_manager->Sleep(task_id); */
     for (int i = 0; i < parent->files_.size(); ++i) {
         child->Files().push_back(parent->files_[i]);
     }
-    for (int i = 0; i < parent->files_.size(); ++i) {
-        printk("pointer of task.files[%d]=%p\n",i,child->files_[i].get());
-    }
+    printk("child=%ld,parent=%ld\n",child->ID(),parent->ID());
     child->SetDPagingBegin(parent->DPagingBegin());
     child->SetDPagingEnd(parent->DPagingEnd());
     printk("thread exec func : before call app\n");
