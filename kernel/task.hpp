@@ -41,6 +41,7 @@ class Task {
  public:
   static const int kDefaultLevel = 1;
   static const size_t kDefaultStackBytes = 8 * 4096;
+  static const size_t kDefaultKernelStackBytesOfThread = 8 * 512;
 
   Task(uint64_t id);
   Task& InitContext(TaskFunc* f, int64_t data);

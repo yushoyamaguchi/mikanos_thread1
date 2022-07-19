@@ -34,16 +34,14 @@ void exec_thread_func(ThreadFunc* f,uint64_t task_id,int64_t data){
     for (int i = 0; i < parent->files_.size(); ++i) {
         child->Files().push_back(parent->files_[i]);
     }
-    printk("child=%ld,parent=%ld\n",child->ID(),parent->ID());
     child->SetDPagingBegin(parent->DPagingBegin());
     child->SetDPagingEnd(parent->DPagingEnd());
-    printk("thread exec func : before call app\n");
     int ret = CallAppforThread(data, 3 << 3 | 3, reinterpret_cast<uint64_t>(f),
                     stack_frame_addr.value + stack_size - 8,
                     &(child->OSStackPointer()));
 
-    while(1)__asm__("hlt");
-    task_manager->Sleep(task_id);             
+    //while(1)__asm__("hlt");  
+    task_manager->Finish(0);         
     return;
 }
 
@@ -59,7 +57,7 @@ void dummy_thread_func(int64_t i){
 
 
 
-void thread_create(ThreadFunc* f,int64_t data){
+uint64_t thread_create(ThreadFunc* f,int64_t data){
     __asm__("cli");
     Task* current=&(task_manager->CurrentTask());
     Task* new_task=&(task_manager->NewTask());
@@ -67,13 +65,13 @@ void thread_create(ThreadFunc* f,int64_t data){
     new_task->is_thread=true;
     new_task->parent_id=current->ID();
     //ここでいろいろコピー
-    const size_t stack_size = new_task->kDefaultStackBytes / sizeof(new_task->stack_[0]);
+    const size_t stack_size = new_task->kDefaultKernelStackBytesOfThread / sizeof(new_task->stack_[0]);
     new_task->stack_.resize(stack_size);
     uint64_t stack_end = reinterpret_cast<uint64_t>(&new_task->stack_[stack_size]);
 
     memset(&(new_task->context_), 0, sizeof(new_task->context_));
     new_task->context_.cr3 = GetCR3();
-    printk("thread_create : cr3=%lx\n",new_task->context_.cr3);
+    //printk("thread_create : cr3=%lx\n",new_task->context_.cr3);
     new_task->context_.rflags = 0x202;
     new_task->context_.cs = kKernelCS;
     new_task->context_.ss = kKernelSS;
@@ -87,6 +85,7 @@ void thread_create(ThreadFunc* f,int64_t data){
 
     task_manager->Wakeup(new_task);
 
+    return new_task->ID();
 }
 
 

@@ -138,7 +138,6 @@ WithError<PageMapEntry*> SetupPML4(Task& current_task) {
   const auto cr3 = reinterpret_cast<uint64_t>(pml4.value);
   SetCR3(cr3);
   current_task.Context().cr3 = cr3;
-  printk("SetupPml4 : old=%p,new=%lx\n",current_pml4,cr3);
   return pml4;
 }
 

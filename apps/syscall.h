@@ -46,6 +46,7 @@ struct SyscallResult SyscallDemandPages(size_t num_pages, int flags);
 struct SyscallResult SyscallMapFile(int fd, size_t* file_size, int flags);
 struct SyscallResult SyscallThreadCreate(void *f,uint64_t data);
 struct SyscallResult SyscallCR3toApp();
+struct SyscallResult SyscallTaskExist(uint64_t task_id);
 
 #ifdef __cplusplus
 } // extern "C"

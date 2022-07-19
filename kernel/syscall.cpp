@@ -56,7 +56,7 @@ SYSCALL(PutString) {
   if (fd < 0 || task.Files().size() <= fd || !task.Files()[fd]) {
     return { 0, EBADF };
   }
-  printk("task_id=%ld,fd=%ld\n",task.ID(),fd);
+  //printk("task_id=%ld,fd=%ld\n",task.ID(),fd);
   return { task.Files()[fd]->Write(s, len), 0 };
 }
 
@@ -398,13 +398,26 @@ SYSCALL(MapFile) {
 }
 
 SYSCALL(TreadCreate) {
-  thread_create((ThreadFunc *)arg1,(int64_t)arg2);
-  return {0, 0};
+  const uint64_t task_id=thread_create((ThreadFunc *)arg1,(int64_t)arg2);
+  return {task_id, 0};
 }
 
 SYSCALL(CR3toApp) {
   const auto cr3=GetCR3();
   return {cr3, 0};
+}
+
+SYSCALL(TaskExist) {
+  Task* t;
+  t=task_manager->GetTaskFromID((uint_fast64_t)arg1);
+  uint64_t is_exist=-1;
+  if(t==NULL){
+    is_exist=0;
+  }
+  else{
+    is_exist=1;
+  }
+  return {is_exist, 0};
 }
 
 #undef SYSCALL
@@ -413,7 +426,7 @@ SYSCALL(CR3toApp) {
 
 using SyscallFuncType = syscall::Result (uint64_t, uint64_t, uint64_t,
                                          uint64_t, uint64_t, uint64_t);
-extern "C" std::array<SyscallFuncType*, 0x12> syscall_table{
+extern "C" std::array<SyscallFuncType*, 0x13> syscall_table{
   /* 0x00 */ syscall::LogString,
   /* 0x01 */ syscall::PutString,
   /* 0x02 */ syscall::Exit,
@@ -432,6 +445,7 @@ extern "C" std::array<SyscallFuncType*, 0x12> syscall_table{
   /* 0x0f */ syscall::MapFile,
   /* 0x10 */ syscall::TreadCreate,
   /* 0x11 */ syscall::CR3toApp,
+  /* 0x12 */ syscall::TaskExist,
 };
 
 void InitializeSyscall() {

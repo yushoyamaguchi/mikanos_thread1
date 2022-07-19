@@ -21,5 +21,5 @@ void exec_thread_func(ThreadFunc* f,uint64_t task_id,int64_t data);
 
 void dummy_thread_func(int64_t i);
 
-void thread_create(ThreadFunc* f,int64_t data);
+uint64_t thread_create(ThreadFunc* f,int64_t data);
 

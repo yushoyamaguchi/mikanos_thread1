@@ -26,7 +26,7 @@ Task& Task::InitContext(TaskFunc* f, int64_t data) {
 
   memset(&context_, 0, sizeof(context_));
   context_.cr3 = GetCR3();
-  printk("init_context : cr3=%lx\n",context_.cr3);
+  //printk("init_context : cr3=%lx\n",context_.cr3);
   context_.rflags = 0x202;
   context_.cs = kKernelCS;
   context_.ss = kKernelSS;
