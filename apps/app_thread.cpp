@@ -19,7 +19,6 @@ int app_thread_join(app_thread_t *thread){
 }
 
 int app_thread_create(app_thread_t* t, void* f, int64_t data){
-    //SyscallThreadCreateを呼ぶ
     auto [ret, err] =SyscallThreadCreate((void *)f,77);
     t->task_id=ret;
     return 0;

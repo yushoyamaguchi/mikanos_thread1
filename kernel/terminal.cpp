@@ -695,6 +695,7 @@ void Terminal::Print(const char* s, std::optional<size_t> len) {
   size_t i = 0;
   const size_t len_ = len ? *len : std::numeric_limits<size_t>::max();
 
+  __asm__("cli");
   while (s[i] && i < len_) {
     const auto [ u32, bytes ] = ConvertUTF8To32(&s[i]);
     Print(u32);
@@ -709,6 +710,7 @@ void Terminal::Print(const char* s, std::optional<size_t> len) {
                           cursor_after.y - cursor_before.y + 16};
 
   Rectangle<int> draw_area{draw_pos, draw_size};
+  __asm__("sti");
 
   Message msg = MakeLayerMessage(
       task_.ID(), LayerID(), LayerOperation::DrawArea, draw_area);
