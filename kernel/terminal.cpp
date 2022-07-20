@@ -651,6 +651,12 @@ WithError<int> Terminal::ExecuteFile(fat::DirectoryEntry& file_entry,
   task.Files().clear();
   task.FileMaps().clear();
 
+  for (auto itr = task.children_id.begin(); itr != task.children_id.end(); itr++) {
+    //task_idで指定してsleep
+    task_manager->Sleep(*itr);
+  }
+  task.children_id.clear();
+
   if (auto err = CleanPageMaps(LinearAddress4Level{0xffff'8000'0000'0000})) {
     return { ret, err };
   }

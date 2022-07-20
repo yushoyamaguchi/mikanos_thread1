@@ -7,6 +7,7 @@
 #include <map>
 #include <optional>
 #include <vector>
+#include <list>
 
 #include "error.hpp"
 #include "message.hpp"

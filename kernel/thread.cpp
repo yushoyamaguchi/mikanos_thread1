@@ -40,7 +40,12 @@ void exec_thread_func(ThreadFunc* f,uint64_t task_id,int64_t data){
                     stack_frame_addr.value + stack_size - 8,
                     &(child->OSStackPointer()));
 
-    //while(1)__asm__("hlt");  
+    /*int p=0;
+    for (auto itr = parent->children_id.begin(); itr != parent->children_id.end(); itr++) {
+        printk("children_id[%d]=%ld\n",p,*itr);
+        p++;
+    }*/
+    parent->children_id.remove(child->ID());
     task_manager->Finish(0);         
     return;
 }
@@ -64,6 +69,7 @@ uint64_t thread_create(ThreadFunc* f,int64_t data){
     __asm__("sti");
     new_task->is_thread=true;
     new_task->parent_id=current->ID();
+    current->children_id.push_back(new_task->ID());
     //ここでいろいろコピー
     const size_t stack_size = new_task->kDefaultKernelStackBytesOfThread / sizeof(new_task->stack_[0]);
     new_task->stack_.resize(stack_size);

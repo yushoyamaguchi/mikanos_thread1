@@ -13,6 +13,7 @@
 #include <map>
 #include <optional>
 #include <vector>
+#include <list>
 
 #include "error.hpp"
 #include "message.hpp"
@@ -70,6 +71,7 @@ class Task {
   
   bool is_thread;
   uint64_t parent_id;
+  std::list<uint64_t> children_id;
 
  private:
   uint64_t id_;
