@@ -16,6 +16,7 @@ Console::Console(const PixelColor& fg_color, const PixelColor& bg_color)
 }
 
 void Console::PutString(const char* s) {
+  __asm__("cli");
   while (*s) {
     if (*s == '\n') {
       Newline();
@@ -29,6 +30,7 @@ void Console::PutString(const char* s) {
   if (layer_manager) {
     layer_manager->Draw(layer_id_);
   }
+  __asm__("sti");
 }
 
 void Console::SetWriter(PixelWriter* writer) {

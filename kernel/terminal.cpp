@@ -652,8 +652,14 @@ WithError<int> Terminal::ExecuteFile(fat::DirectoryEntry& file_entry,
   task.FileMaps().clear();
 
   for (auto itr = task.children_id.begin(); itr != task.children_id.end(); itr++) {
-    //task_idで指定してsleep
-    task_manager->Sleep(*itr);
+    //task_idで指定してsleep or finish
+    Task* t=task_manager->GetTaskFromID(*itr);
+    if(t->Running()){
+      task_manager->Sleep(*itr);
+    }
+    else{
+      task_manager->FinishByID(*itr,0);
+    }
   }
   task.children_id.clear();
 

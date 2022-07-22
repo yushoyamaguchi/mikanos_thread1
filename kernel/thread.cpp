@@ -45,8 +45,15 @@ void exec_thread_func(ThreadFunc* f,uint64_t task_id,int64_t data){
         printk("children_id[%d]=%ld\n",p,*itr);
         p++;
     }*/
-    parent->children_id.remove(child->ID());
-    task_manager->Finish(0);         
+    //parent->children_id.remove(child->ID());
+    /*while(1){
+        __asm__("hlt");
+    }*/
+    //task_manager->Finish(0); 
+    while(1){
+        __asm__("cli"); 
+        task_manager->Sleep(task_id);  
+    }    
     return;
 }
 

@@ -408,10 +408,10 @@ SYSCALL(CR3toApp) {
 }
 
 SYSCALL(TaskExist) {
-  Task* t;
-  t=task_manager->GetTaskFromID((uint_fast64_t)arg1);
+  bool b;
+  b=task_manager->RunningCheck((uint64_t)arg1);
   uint64_t is_exist=-1;
-  if(t==NULL){
+  if(b==false){
     is_exist=0;
   }
   else{

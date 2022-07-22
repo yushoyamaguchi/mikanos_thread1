@@ -108,8 +108,10 @@ class TaskManager {
   Error SendMessage(uint64_t id, const Message& msg);
   Task& CurrentTask();
   void Finish(int exit_code);
+  void FinishByID(uint64_t id,int exit_code);
   WithError<int> WaitFinish(uint64_t task_id);
   Task* GetTaskFromID(uint64_t id);
+  bool RunningCheck(uint64_t id);
 
  private:
   std::vector<std::unique_ptr<Task>> tasks_{};

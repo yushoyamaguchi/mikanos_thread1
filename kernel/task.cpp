@@ -177,6 +177,20 @@ Task* TaskManager::GetTaskFromID(uint64_t id){
   }
 }
 
+
+bool TaskManager::RunningCheck(uint64_t id){
+  auto it = std::find_if(tasks_.begin(), tasks_.end(),
+                         [id](const auto& t){ return t->ID() == id; });
+  if (it == tasks_.end()) {
+    return false;
+  }
+  else{
+    return(it->get()->Running());
+  }
+}
+
+
+
 void TaskManager::Wakeup(Task* task, int level) {
   if (task->Running()) {
     ChangeLevelRunning(task, level);
@@ -240,6 +254,32 @@ void TaskManager::Finish(int exit_code) {
   }
 
   RestoreContext(&CurrentTask().Context());
+}
+
+void TaskManager::FinishByID(uint64_t id,int exit_code) {
+  uint64_t task_id=id;
+  Task* task=GetTaskFromID(id);
+  if (task == running_[current_level_].front()) {
+    Finish(exit_code);
+    return;
+  }
+
+  __asm__("cli");
+  task->Sleep();
+  auto it = std::find_if(
+      tasks_.begin(), tasks_.end(),
+      [task_id](const auto& t){ return t.get()->ID() == task_id; });
+  tasks_.erase(it);
+
+  finish_tasks_[task_id] = exit_code;
+  __asm__("sti");
+  /*if (auto it = finish_waiter_.find(task_id); it != finish_waiter_.end()) {
+    auto waiter = it->second;
+    finish_waiter_.erase(it);
+    Wakeup(waiter);
+  }*/
+
+
 }
 
 WithError<int> TaskManager::WaitFinish(uint64_t task_id) {
