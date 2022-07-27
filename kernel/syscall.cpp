@@ -420,13 +420,23 @@ SYSCALL(TaskExist) {
   return {is_exist, 0};
 }
 
+SYSCALL(IntrLock){
+  __asm__("cli");
+  return { 0, 0 };
+}
+
+SYSCALL(IntrUnlock){
+  __asm__("sti");
+  return { 0, 0 };
+}
+
 #undef SYSCALL
 
 } // namespace syscall
 
 using SyscallFuncType = syscall::Result (uint64_t, uint64_t, uint64_t,
                                          uint64_t, uint64_t, uint64_t);
-extern "C" std::array<SyscallFuncType*, 0x13> syscall_table{
+extern "C" std::array<SyscallFuncType*, 0x15> syscall_table{
   /* 0x00 */ syscall::LogString,
   /* 0x01 */ syscall::PutString,
   /* 0x02 */ syscall::Exit,
@@ -446,6 +456,8 @@ extern "C" std::array<SyscallFuncType*, 0x13> syscall_table{
   /* 0x10 */ syscall::TreadCreate,
   /* 0x11 */ syscall::CR3toApp,
   /* 0x12 */ syscall::TaskExist,
+  /* 0x13 */ syscall::IntrLock,
+  /* 0x14 */ syscall::IntrUnlock,
 };
 
 void InitializeSyscall() {

@@ -29,3 +29,5 @@ define_syscall MapFile,          0x8000000f
 define_syscall ThreadCreate,     0x80000010
 define_syscall CR3toApp,         0x80000011
 define_syscall TaskExist,        0x80000012
+define_syscall IntrLock,         0x80000013
+define_syscall IntrUnlock,       0x80000014
