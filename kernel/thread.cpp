@@ -15,9 +15,6 @@ void exec_thread_func(ThreadFunc* f,uint64_t task_id,int64_t data){
     関数終わったらtaskも終わる設定
     親が終わったら子も終わる設定
     */
-    //こっちだったらエラーは起こらない
-    /*printk("exec_thread_func: data=%ld\n",data);
-    task_manager->Sleep(task_id);*/
     Task* child=task_manager->GetTaskFromID(task_id);
     Task* parent=task_manager->GetTaskFromID(child->parent_id);
     const int stack_size = 16 * 4096;
@@ -29,8 +26,6 @@ void exec_thread_func(ThreadFunc* f,uint64_t task_id,int64_t data){
         while(1) __asm__("hlt");
         return ;
     }
-    /*while(1)__asm__("hlt");
-    task_manager->Sleep(task_id); */
     for (int i = 0; i < parent->files_.size(); ++i) {
         child->Files().push_back(parent->files_[i]);
     }
@@ -40,16 +35,6 @@ void exec_thread_func(ThreadFunc* f,uint64_t task_id,int64_t data){
                     stack_frame_addr.value + stack_size - 8,
                     &(child->OSStackPointer()));
 
-    /*int p=0;
-    for (auto itr = parent->children_id.begin(); itr != parent->children_id.end(); itr++) {
-        printk("children_id[%d]=%ld\n",p,*itr);
-        p++;
-    }*/
-    //parent->children_id.remove(child->ID());
-    /*while(1){
-        __asm__("hlt");
-    }*/
-    //task_manager->Finish(0); 
     while(1){
         __asm__("cli"); 
         task_manager->Sleep(task_id);  
