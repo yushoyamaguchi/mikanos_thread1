@@ -28,18 +28,18 @@ kernel.elf: $(OBJS) Makefile
 	-lfreetype
 
 %.o: %.cpp Makefile
-	clang++ $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
+	clang++-10 $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
 .%.d: %.cpp
-	clang++ $(CPPFLAGS) $(CXXFLAGS) -MM $< > $@
+	clang++-10 $(CPPFLAGS) $(CXXFLAGS) -MM $< > $@
 	$(eval OBJ = $(<:.cpp=.o))
 	sed --in-place 's|$(notdir $(OBJ))|$(OBJ)|' $@
 
 %.o: %.c Makefile
-	clang $(CPPFLAGS) $(CFLAGS) -c $< -o $@
+	clang-10 $(CPPFLAGS) $(CFLAGS) -c $< -o $@
 
 .%.d: %.c
-	clang $(CPPFLAGS) $(CFLAGS) -MM $< > $@
+	clang-10 $(CPPFLAGS) $(CFLAGS) -MM $< > $@
 	$(eval OBJ = $(<:.c=.o))
 	sed --in-place 's|$(notdir $(OBJ))|$(OBJ)|' $@
 
