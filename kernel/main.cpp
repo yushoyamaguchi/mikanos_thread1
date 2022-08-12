@@ -289,8 +289,7 @@ extern "C" void KernelMainNewStack(
       } else if (msg->arg.keyboard.press &&
                  msg->arg.keyboard.keycode ==61 /* F4 */) {
         thread_create(dummy_thread_func,88);
-        //printk("cr3=%lx\n",current_cr3);
-      } else {
+      } else if(term_manager->GetTerminalFromLayerID(act)->input_tid==0){
         __asm__("cli");
         auto task_it = layer_task_map->find(act);
         __asm__("sti");
@@ -303,6 +302,31 @@ extern "C" void KernelMainNewStack(
               msg->arg.keyboard.keycode,
               msg->arg.keyboard.ascii);
         }
+      } else {
+        __asm__("cli");
+        Terminal* term=term_manager->GetTerminalFromLayerID(act);
+        Task* task_it;
+        if(term!=nullptr){
+          task_it=task_manager->GetTaskFromID(term->input_tid);
+          if(task_it==nullptr){
+            printk("Cannot find matched task :key push not handled: keycode %02x, ascii %02x\n",
+              msg->arg.keyboard.keycode,
+              msg->arg.keyboard.ascii);
+            __asm__("sti");
+            break;
+          }
+        }
+        else{
+          printk("Matched terminal doesn't exist:key push not handled: keycode %02x, ascii %02x\n",
+              msg->arg.keyboard.keycode,
+              msg->arg.keyboard.ascii);
+          __asm__("sti");
+          break;
+        }
+        __asm__("sti");
+        __asm__("cli");
+        task_manager->SendMessage(task_it->ID(), *msg);
+        __asm__("sti");
       }
       break;
     case Message::kLayer:

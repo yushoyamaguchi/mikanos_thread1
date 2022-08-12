@@ -15,6 +15,7 @@ void input(int64_t arg){
     for(;;){
         SyscallIntrLock();
         if (fgets(buffer, sizeof(buffer), stdin) == NULL || buffer[0] == '\n') {
+            SyscallIntrUnlock();
             SyscallExit(-1);
         }
         num=atoi(buffer);
@@ -27,7 +28,6 @@ void input(int64_t arg){
 }
 
 
-
 void output(int64_t arg){
     for(;;){
         if (num == -1) {
@@ -37,6 +37,7 @@ void output(int64_t arg){
     }
     SyscallExit(0);
 }
+
 
 extern "C" void main(){
     void (*f)(int64_t);

@@ -4,6 +4,7 @@
 #include <limits>
 #include <vector>
 
+
 #include "font.hpp"
 #include "layer.hpp"
 #include "pci.hpp"
@@ -271,6 +272,7 @@ Terminal::Terminal(Task& task, const TerminalDescriptor* term_desc)
     Print(">");
   }
   cmd_history_.resize(8);
+  term_manager->terms_.emplace_back(this);
 }
 
 Rectangle<int> Terminal::BlinkCursor() {
@@ -848,6 +850,12 @@ void TaskTerminal(uint64_t task_id, int64_t data) {
     case Message::kWindowClose:
       CloseLayer(msg->arg.window_close.layer_id);
       __asm__("cli");
+      {
+        auto it = std::find_if(
+          term_manager->terms_.begin(), term_manager->terms_.end(),
+          [terminal](const auto& t){ return t.get() == terminal; });
+        term_manager->terms_.erase(it);
+      }
       task_manager->Finish(terminal->LastExitCode());
       break;
     default:
@@ -865,10 +873,11 @@ size_t TerminalFileDescriptor::Read(void* buf, size_t len) {
   
   while (true) {
     __asm__("cli");
-    auto msg = term_.UnderlyingTask().ReceiveMessage();
+    Task* current=&(task_manager->CurrentTask());
+    term_.input_tid=current->ID();
+    auto msg=current->ReceiveMessage();
     if (!msg) {
-      term_.UnderlyingTask().Sleep();
-      __asm__("sti");
+      current->Sleep();
       continue;
     }
     __asm__("sti");
@@ -881,6 +890,7 @@ size_t TerminalFileDescriptor::Read(void* buf, size_t len) {
       s[1] = toupper(msg->arg.keyboard.ascii);
       term_.Print(s);
       if (msg->arg.keyboard.keycode == 7 /* D */) {
+        term_.input_tid=0;
         return 0; // EOT
       }
       continue;
@@ -889,6 +899,7 @@ size_t TerminalFileDescriptor::Read(void* buf, size_t len) {
     bufc[0] = msg->arg.keyboard.ascii;
     term_.Print(bufc, 1);
     term_.Redraw();
+    term_.input_tid=0;
     return 1;
   }
 }
@@ -966,4 +977,17 @@ void PipeDescriptor::FinishWrite() {
   __asm__("cli");
   task_.SendMessage(msg);
   __asm__("sti");
+}
+
+TermManager* term_manager;
+
+Terminal* TermManager::GetTerminalFromLayerID(unsigned int layer_id){
+  auto it = std::find_if(term_manager->terms_.begin(), term_manager->terms_.end(),
+                         [layer_id](const auto& t){ return t->LayerID() == layer_id; });
+  if (it == term_manager->terms_.end()) {
+    return nullptr;
+  }
+  else{
+    return (it->get());
+  }                       
 }

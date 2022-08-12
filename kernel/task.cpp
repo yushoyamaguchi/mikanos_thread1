@@ -170,7 +170,7 @@ Task* TaskManager::GetTaskFromID(uint64_t id){
   auto it = std::find_if(tasks_.begin(), tasks_.end(),
                          [id](const auto& t){ return t->ID() == id; });
   if (it == tasks_.end()) {
-    return NULL;
+    return nullptr;
   }
   else{
     return (it->get());

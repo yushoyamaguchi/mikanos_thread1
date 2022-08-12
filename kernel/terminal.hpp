@@ -6,6 +6,7 @@
 
 #pragma once
 
+
 #include <array>
 #include <deque>
 #include <map>
@@ -45,6 +46,7 @@ class Terminal {
   Task& UnderlyingTask() const { return task_; }
   int LastExitCode() const { return last_exit_code_; }
   void Redraw();
+  uint64_t input_tid=0;
 
  private:
   std::shared_ptr<ToplevelWindow> window_;
@@ -72,6 +74,13 @@ class Terminal {
   bool show_window_;
   std::array<std::shared_ptr<FileDescriptor>, 3> files_;
   int last_exit_code_{0};
+};
+
+class TermManager{
+ public:
+  Terminal* GetTerminalFromLayerID(unsigned int layer_id);
+  std::vector<std::unique_ptr<Terminal>> terms_{};
+
 };
 
 void TaskTerminal(uint64_t task_id, int64_t data);
@@ -104,3 +113,5 @@ class PipeDescriptor : public FileDescriptor {
   size_t len_{0};
   bool closed_{false};
 };
+
+extern TermManager* term_manager;
