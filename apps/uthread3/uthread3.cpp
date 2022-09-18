@@ -23,7 +23,7 @@ int temp[NUM_ITEMS];
 
 
 
-int main()
+extern "C" int main()
 {
   int i;
 
