@@ -289,7 +289,7 @@ extern "C" void KernelMainNewStack(
       } else if (msg->arg.keyboard.press &&
                  msg->arg.keyboard.keycode ==61 /* F4 */) {
         thread_create(dummy_thread_func,88);
-      } else if(term_manager->GetTerminalFromLayerID(act)->input_tid==0){
+      } else if(term_manager->GetTerminalFromLayerID(act)->input_task_id==0){
         __asm__("cli");
         auto task_it = layer_task_map->find(act);
         __asm__("sti");
@@ -307,7 +307,7 @@ extern "C" void KernelMainNewStack(
         Terminal* term=term_manager->GetTerminalFromLayerID(act);
         Task* task_it;
         if(term!=nullptr){
-          task_it=task_manager->GetTaskFromID(term->input_tid);
+          task_it=task_manager->GetTaskFromID(term->input_task_id);
           if(task_it==nullptr){
             printk("Cannot find matched task :key push not handled: keycode %02x, ascii %02x\n",
               msg->arg.keyboard.keycode,

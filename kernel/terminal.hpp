@@ -46,7 +46,7 @@ class Terminal {
   Task& UnderlyingTask() const { return task_; }
   int LastExitCode() const { return last_exit_code_; }
   void Redraw();
-  uint64_t input_tid=0;
+  uint64_t input_task_id=0;
 
  private:
   std::shared_ptr<ToplevelWindow> window_;

@@ -874,7 +874,7 @@ size_t TerminalFileDescriptor::Read(void* buf, size_t len) {
   while (true) {
     __asm__("cli");
     Task* current=&(task_manager->CurrentTask());
-    term_.input_tid=current->ID();
+    term_.input_task_id=current->ID();
     auto msg=current->ReceiveMessage();
     if (!msg) {
       current->Sleep();
@@ -890,7 +890,7 @@ size_t TerminalFileDescriptor::Read(void* buf, size_t len) {
       s[1] = toupper(msg->arg.keyboard.ascii);
       term_.Print(s);
       if (msg->arg.keyboard.keycode == 7 /* D */) {
-        term_.input_tid=0;
+        term_.input_task_id=0;
         return 0; // EOT
       }
       continue;
@@ -899,7 +899,7 @@ size_t TerminalFileDescriptor::Read(void* buf, size_t len) {
     bufc[0] = msg->arg.keyboard.ascii;
     term_.Print(bufc, 1);
     term_.Redraw();
-    term_.input_tid=0;
+    term_.input_task_id=0;
     return 1;
   }
 }
