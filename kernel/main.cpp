@@ -39,6 +39,8 @@
 #include "syscall.hpp"
 #include "uefi.hpp"
 
+#include "net/e1000.hpp"
+
 __attribute__((format(printf, 1, 2))) int printk(const char* format, ...) {
   va_list ap;
   int result;
@@ -224,6 +226,8 @@ extern "C" void KernelMainNewStack(
   InitializeKeyboard();
   InitializeMouse();
 
+  nic_pci_test();
+
   app_loads = new std::map<fat::DirectoryEntry*, AppLoadInfo>;
   task_manager->NewTask()
     .InitContext(TaskTerminal, 0)
@@ -280,7 +284,7 @@ extern "C" void KernelMainNewStack(
         task_manager->NewTask()
           .InitContext(TaskTerminal, 0)
           .Wakeup();
-      } else {
+      }  else {
         __asm__("cli");
         auto task_it = layer_task_map->find(act);
         __asm__("sti");
